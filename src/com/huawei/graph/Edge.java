@@ -37,28 +37,4 @@ public class Edge {
 	public String toString(){
 		return this.iVertex.id + " " + this.jVertex.id + " " + this.totalBand + " " + this.price;
 	}
-	
-	//得到同一条边上的另一个节点
-	public Vertex getAdjNode(Vertex v){
-		if(v != null){
-			if(this.iVertex.equals(v)){
-				return this.jVertex;
-			}else if(this.jVertex.equals(v)){
-				return this.iVertex;
-			}
-		}
-		return null;
-	}
-	
-	//获得节点v的下一条邻接边
-	public Edge getNextEdge(Vertex v){
-		if(v != null){
-			if(this.iVertex.equals(v)){
-				return this.iEdge;
-			}else if(this.jVertex.equals(v)){
-				return this.jEdge;
-			}
-		}
-		return null;
-	}
 }

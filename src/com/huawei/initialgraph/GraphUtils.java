@@ -2,6 +2,7 @@ package com.huawei.initialgraph;
 
 import java.util.*;
 
+import com.huawei.graph.Consumer;
 import com.huawei.graph.Edge;
 import com.huawei.graph.Graph;
 import com.huawei.graph.Vertex;
@@ -52,9 +53,17 @@ public class GraphUtils {
     		long networkId = (int)ltmp[1];
     		Vertex networknode = g.networknodeCollection.get((int)networkId);
     		networknode.bandRequire = ltmp[2];
-    		g.consumernodeCollection.put((int)ltmp[0], (int)ltmp[1]);
+			Consumer c = new Consumer(ltmp[0],ltmp[1],ltmp[2]);
+			g.consumernodeCollection.add(c);
     	}
-    	
+
+    	Collections.sort(g.consumernodeCollection, new Comparator<Consumer>() {
+			@Override
+			public int compare(Consumer c1, Consumer c2) {
+				return (int)(c2.bandrequire - c1.bandrequire);
+			}
+		});
+
     	return g;
 	}
     

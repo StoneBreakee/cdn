@@ -1,6 +1,7 @@
 package com.huawei.graph;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class Vertex implements Serializable,Comparable<Vertex>{
 	private static final long serialVersionUID = 1L;
@@ -8,12 +9,15 @@ public class Vertex implements Serializable,Comparable<Vertex>{
 	public Edge firstEdge;
 	public long kind;
 	public long bandRequire;
+	//该点的邻接边的个数
+	public long edges;
 	
 	public Vertex() {
 		this.id = 0;
 		this.firstEdge = null;
 		this.kind = 0;
 		this.bandRequire = 0;
+		this.edges = 0;
 	}
 	
 	//netowrknode
@@ -22,6 +26,7 @@ public class Vertex implements Serializable,Comparable<Vertex>{
 		this.firstEdge = null;
 		this.kind = 0;
 		this.bandRequire = 0;
+		this.edges = 0;
 	}
 
 	//consumernode
@@ -30,6 +35,7 @@ public class Vertex implements Serializable,Comparable<Vertex>{
 		this.firstEdge = null;
 		this.kind = 1;
 		this.bandRequire = bandRequire;
+		this.edges = 0;
 	}
 	
 	@Override
@@ -54,4 +60,22 @@ public class Vertex implements Serializable,Comparable<Vertex>{
 		Vertex v = (Vertex)o;
 		return (int)(this.id - v.id);
 	}
+
+	public ArrayList<Vertex> getAllAdjNodes(Vertex v){
+        ArrayList<Vertex> list = null;
+        if(v.firstEdge != null){
+            list = new ArrayList<Vertex>();
+            Edge e = v.firstEdge;
+            while(e != null){
+                if(e.iVertex.equals(v)){
+                    list.add(e.jVertex);
+                    e = e.iEdge;
+                }else{
+                    list.add(e.iVertex);
+                    e = e.jEdge;
+                }
+            }
+        }
+        return list;
+    }
 }

@@ -33,8 +33,33 @@ public class Edge {
 		usage.put(jVertex+"->"+iVertex, 0);
 	}
 	
+	//Edge得到v的邻接顶点
+	public Vertex getAdjVertex(Vertex v){
+		if(this.iVertex.equals(v)){
+			return this.jVertex;
+		}else if(this.jVertex.equals(v)){
+			return this.iVertex;
+		}else{
+			return null;
+		}
+	}
+	
 	@Override
 	public String toString(){
 		return this.iVertex.id + " " + this.jVertex.id + " " + this.totalBand + " " + this.price;
+	}
+	
+	@Override
+	public Object clone(){
+		Edge e = null;
+		try{
+			e = (Edge)super.clone();
+			e.iVertex.firstEdge = iVertex.firstEdge;
+			e.jVertex.firstEdge = jVertex.firstEdge;
+			return e;
+		}catch(CloneNotSupportedException ex){
+			
+		}
+		return null;
 	}
 }

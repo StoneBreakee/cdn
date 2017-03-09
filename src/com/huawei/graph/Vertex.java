@@ -79,4 +79,17 @@ public class Vertex implements Serializable,Comparable<Vertex>{
         }
         return list;
     }
+	
+	@Override
+	public Object clone(){
+		Vertex v = null;
+		try{
+			v = (Vertex)super.clone();
+			v.firstEdge = firstEdge;
+			return v;
+		}catch(CloneNotSupportedException e){
+			
+		}
+		return null;
+	}
 }

@@ -125,13 +125,14 @@ public  class Graph {
     //获得v节点的所有邻接边
     public ArrayList<Edge> getAllEdgeOfNode(Vertex v){
         Edge e = this.networknodeCollection.get((int)v.id).firstEdge;
+        Edge etmp = e;
         ArrayList<Edge> result = new ArrayList<Edge>();
-        while (e != null){
-            result.add(e);
-            if(e.jVertex.equals(v)){
-                e = e.jEdge;
+        while (etmp != null){
+            result.add(etmp);
+            if(etmp.jVertex.equals(v)){
+            	etmp = etmp.jEdge;
             }else {
-                e = e.iEdge;
+            	etmp = etmp.iEdge;
             }
         }
         Collections.sort(result, new Comparator<Edge>() {
@@ -211,23 +212,121 @@ public  class Graph {
     
     //从备选节点获取方案经费消耗
     //v 消费节点对应的网络节点
-    public void consumerToCandidateNode(Vertex v,Set<Integer> candidatenode){
-    	v = this.networknodeCollection.get((int)v.id);
-    	ArrayList<Edge> eList = this.getAllEdgeOfNode(v);
-    	ArrayList<Vertex> vList = v.getAllAdjNodes(v);
-    	if(candidatenode.contains(v)){
-    		
+    public void consumerToCandidateNode(final Vertex vertex,Set<Integer> candidatenode){
+    	Queue<Vertex> queue = new LinkedList<Vertex>();
+    	queue.add(vertex);
+    	while(!queue.isEmpty()){
+    		final Vertex v = queue.poll();
+    		if(candidatenode.contains((int)v.id)){
+    			System.out.println(v+" --  ");
+    			continue;
+    		}
+    		long bandrequire = v.bandRequire;
+        	ArrayList<Edge> eList = this.getAllEdgeOfNode(v);
+        	ArrayList<Vertex> vList = v.getAllAdjNodes(v);
+        	
+        	//当需求带宽过大时(超过每个邻接带宽吞吐)，按照带宽价格从小到大依次选取;否则，选择带宽带宽吞吐最接近的价格最便宜的路径
+        	long maxedgeband = 0;
+        	Iterator<Edge> it = eList.iterator();
+        	while(it.hasNext()){
+        		Edge e = it.next();
+        		long totalBand = e.totalBand;
+        		long usage = e.usage.get(v + "->" + e.getAdjVertex(v));
+        		long avail = totalBand - usage;
+        		if(avail <= 0.0){
+        			it.remove();
+        			vList.remove(e.getAdjVertex(v));
+        			continue;
+        		}
+        		if(maxedgeband < avail){
+        			maxedgeband = avail;
+        		}
+        	}
+        	if(maxedgeband < bandrequire){
+        		Collections.sort(eList,new Comparator<Edge>() {
+    				@Override
+    				public int compare(Edge e1, Edge e2) {
+    					// TODO Auto-generated method stub
+    					Vertex v1 = e1.getAdjVertex(v);
+    					long band1 = e1.usage.get(v+"->"+v1);
+    					long avail1 = e1.totalBand - band1;
+    					Vertex v2 = e2.getAdjVertex(v);
+    					long band2 = e2.usage.get(v+"->"+v2);
+    					long avail2 = e2.totalBand - band2;
+    					return (int)(avail2 - avail1);
+    				}
+    			});
+        		long bandrequiretmp = bandrequire;
+        		for(Edge e:eList){
+        			long totalBand = e.totalBand;
+            		long usage = e.usage.get(v + "->" + e.getAdjVertex(v));
+            		long avail = totalBand - usage;
+        			if(bandrequiretmp > 0){
+                		if(bandrequiretmp < avail){
+                			e.usage.put(v + "->" + e.getAdjVertex(v),(int) (usage + bandrequiretmp));
+                			e.getAdjVertex(v).bandRequire = bandrequiretmp;
+                		}else{
+                			//更新路径带宽吞吐
+                			e.usage.put(v + "->" + e.getAdjVertex(v),(int) totalBand);
+                			//将带宽需求传递下去
+                			e.getAdjVertex(v).bandRequire = avail;
+                		}
+                		System.out.println(v +" --> " + e.getAdjVertex(v));
+                		queue.add(e.getAdjVertex(v));
+        			}else{
+        				break;
+        			}
+        			bandrequiretmp = bandrequiretmp - avail;
+        		}
+        	}else{
+        		Iterator<Edge> eit = eList.iterator();
+        		while(eit.hasNext()){
+        			Edge e = eit.next();
+            		long totalBand = e.totalBand;
+            		long usage = e.usage.get(v + "->" + e.getAdjVertex(v));
+            		long avail = totalBand - usage;
+        			if(avail < bandrequire){
+        				eit.remove();
+        			}
+        		}
+        		Collections.sort(eList,new Comparator<Edge>() {
+
+					@Override
+					public int compare(Edge e1, Edge e2) {
+						// TODO Auto-generated method stub
+						Vertex v1 = e1.getAdjVertex(v);
+    					long band1 = e1.usage.get(v+"->"+v1);
+    					long avail1 = e1.totalBand - band1;
+    					Vertex v2 = e2.getAdjVertex(v);
+    					long band2 = e2.usage.get(v+"->"+v2);
+    					long avail2 = e2.totalBand - band2;
+    					return (int)(avail1 - avail2);
+					}
+				});
+        		boolean flag = false;
+        		for(Edge e:eList){
+        			if(candidatenode.contains((int)(e.getAdjVertex(v).id))){
+        				queue.add(e.getAdjVertex(v));
+        				long usage = e.usage.get(v + "->" + e.getAdjVertex(v));
+        				e.usage.put(v + "->" + e.getAdjVertex(v),(int)(usage + bandrequire));
+        				flag = true;
+        				break;
+        			}
+        		}
+        		if(flag){
+        			continue;
+        		}else{
+        			Edge e = eList.get(0);
+        			queue.add(e.getAdjVertex(v));
+        			System.out.println(v +" --> " + e.getAdjVertex(v));
+    				long usage = e.usage.get(v + "->" + e.getAdjVertex(v));
+    				e.usage.put(v + "->" + e.getAdjVertex(v),(int)(usage + bandrequire));
+    				e.getAdjVertex(v).bandRequire = bandrequire;
+        		}
+        	}
     	}
-    	long maxband = getMaxBand(eList);
+    	
     }
 
-	private long getMaxBand(ArrayList<Edge> eList) {
-		long band = 0;
-		for(Edge e:eList){
-			if(band < e.totalBand){
-				band = e.totalBand;
-			}
-		}
-		return band;
-	}
+	
 }

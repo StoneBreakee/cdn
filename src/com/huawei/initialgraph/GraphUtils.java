@@ -11,7 +11,7 @@ public class GraphUtils {
 	@SuppressWarnings("unchecked")
 	public static Graph getGraphByFile() {
     	Graph g = new Graph();
-		String[] lines = FileUtil.read("./graphfile/case5.txt", null);
+		String[] lines = FileUtil.read("./graphfile/case0.txt", null);
 		String[] arr   = lines[0].split(" ");
 		g.networknodenum  = Long.parseLong(arr[0]);
 		g.networkedgenum  = Long.parseLong(arr[1]);
@@ -32,7 +32,7 @@ public class GraphUtils {
     		Vertex v = new Vertex(ltmp[0]);
     		Vertex u = new Vertex(ltmp[1]);
     		Edge e = new Edge(v,u,null,null,ltmp[2],ltmp[3]);
-
+    			
     		addEdgeOnVertex(g, set, v, e);
     		addEdgeOnVertex(g, set, u, e);
     	}
@@ -102,6 +102,7 @@ public class GraphUtils {
 			g.networknodeCollection.add(v);
 			v.firstEdge = e;
 		}else{
+			//拿到v节点的firstEdge
 			Vertex vtmp = null;
 			for(Vertex vit:g.networknodeCollection){
 				if(vit.equals(v)){
@@ -109,6 +110,14 @@ public class GraphUtils {
 					break;
 				}
 			}
+			
+			if(e.iVertex.equals(vtmp)){
+				e.iVertex = vtmp;
+			}else if(e.jVertex.equals(vtmp)){
+				e.jVertex = vtmp;
+			}
+			
+			//将e边连接到v节点相关的边链表的末尾
 			Edge etmp = vtmp.firstEdge , ptmp = vtmp.firstEdge;
 			while(etmp != null){
 				if(etmp.iVertex.equals(v)){
@@ -126,6 +135,7 @@ public class GraphUtils {
 			}else if(ptmp.jVertex.equals(v)){
 				ptmp.jEdge = e;
 			}
+			
 		}
 	}
 }

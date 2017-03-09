@@ -46,9 +46,9 @@ public class Main {
 			System.out.println("------end------");
 		}
 		
-		for(int i = 0;i < scores.length;i++){
-			System.out.println(scores[i]);
-		}
+//		for(int i = 0;i < scores.length;i++){
+//			System.out.println(scores[i]);
+//		}
 		
 		int[] nodecross = new int[(int)g.networknodenum];
 		for(int i = 0;i < nodecross.length;i++){
@@ -74,29 +74,21 @@ public class Main {
 			}
 		}
 
-		for(int i = 0;i < nodecross.length;i++){
-			System.out.println(nodecross[i]);
-		}
+//		for(int i = 0;i < nodecross.length;i++){
+//			System.out.println(nodecross[i]);
+//		}
 		
 		Set<Integer> candidateNode = new HashSet<Integer>();
-		for(int i = 0;i < scores.length && scores[i] > 0.0;i++){
-			candidateNode.add(nodecross[i]);
-		}
+//		for(int i = 0;i < scores.length && scores[i] > 0.0;i++){
+//			candidateNode.add(nodecross[i]);
+//			System.out.print(nodecross[i] + " ");
+//		}
+		candidateNode.add(2);
+		candidateNode.add(3);
+		candidateNode.add(39);
 		
-		long min = Long.MAX_VALUE;
-		int coefi = 0,coefj = 0;
-		for(int i = 0;i <= 45;i++){
-			long itmp = i * 3 + 65;
-			for(int j = 45 - i;j <= 65 - i && j <= 30;j++){
-				itmp += j;
-				if(min > itmp){
-					min = itmp;
-					coefi = i;
-					coefj = j;
-				}
-			}
-		}
-		System.out.println(coefi + "," + coefj);
+		System.out.println();
+		g.consumerToCandidateNode(g.networknodeCollection.get(22),candidateNode);
 		long end = System.currentTimeMillis();
 		System.out.println("\n" + (end - start));
 	}

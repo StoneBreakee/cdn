@@ -24,3 +24,7 @@ e.g. node1的带宽需求为65，与node1邻接的顶点node2，3，4的网络�
                                              更新node1与nodetmp相连的边的可通过带宽
                如果NodeSet2的为空证明此路不通，然后。。。
    4.同样的方式(Step1,2,3)应用在Queue中的节点
+cancel TODO1
+
+Add TODO2  包架构太乱，整理包架构  19:42:00
+     整理目标:符合华为SDK包架构，自己的代码添加到com.huawei.graph和com.huawei.graphoperation中

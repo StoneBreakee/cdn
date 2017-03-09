@@ -61,6 +61,7 @@ public class Vertex implements Serializable,Comparable<Vertex>{
 		return (int)(this.id - v.id);
 	}
 
+	//获得该点的所有邻接点
 	public ArrayList<Vertex> getAllAdjNodes(Vertex v){
         ArrayList<Vertex> list = null;
         if(v.firstEdge != null){

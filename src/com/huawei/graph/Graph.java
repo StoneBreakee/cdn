@@ -122,6 +122,7 @@ public  class Graph {
         return path;
     }
 
+    //获得v节点的所有邻接边
     public ArrayList<Edge> getAllEdgeOfNode(Vertex v){
         Edge e = this.networknodeCollection.get((int)v.id).firstEdge;
         ArrayList<Edge> result = new ArrayList<Edge>();
@@ -142,6 +143,7 @@ public  class Graph {
         return result;
     }
 
+    //获取服务器选址的备选节点集合
     public int[]  shortestPath_DIJ1(Vertex v,double[] d){
         Set<Vertex> min_set = new HashSet<Vertex>();
         Set<Vertex> unknown_set = new HashSet<Vertex>();
@@ -206,4 +208,26 @@ public  class Graph {
         }
         return path;
     }
+    
+    //从备选节点获取方案经费消耗
+    //v 消费节点对应的网络节点
+    public void consumerToCandidateNode(Vertex v,Set<Integer> candidatenode){
+    	v = this.networknodeCollection.get((int)v.id);
+    	ArrayList<Edge> eList = this.getAllEdgeOfNode(v);
+    	ArrayList<Vertex> vList = v.getAllAdjNodes(v);
+    	if(candidatenode.contains(v)){
+    		
+    	}
+    	long maxband = getMaxBand(eList);
+    }
+
+	private long getMaxBand(ArrayList<Edge> eList) {
+		long band = 0;
+		for(Edge e:eList){
+			if(band < e.totalBand){
+				band = e.totalBand;
+			}
+		}
+		return band;
+	}
 }

@@ -1,3 +1,7 @@
+import java.util.HashSet;
+import java.util.Set;
+
+import com.huawei.graph.Consumer;
 import com.huawei.graph.Graph;
 import com.huawei.graph.Vertex;
 import com.huawei.initialgraph.GraphUtils;
@@ -14,18 +18,18 @@ public class Main {
 		
 		double gradient_total = 2;
 		double[] scores = new double[(int) g.networknodenum];
-		for(Integer key:g.consumernodeCollection.keySet()){
+		for(Consumer c:g.consumernodeCollection){
 			System.out.println("-----begin-----");
-			int networkId = g.consumernodeCollection.get(key);
+			int networkId = (int) c.networkid;
 			Vertex vBand = g.networknodeCollection.get(networkId);
 			double weight = gradient_total + (double)vBand.bandRequire / (double)500 ;
 			gradient_total = gradient_total - 0.1;
 //			scores[networkId] = weight;
 			
 			double[] vertexes = new double[(int)g.networknodenum];
-			int[] path = g.shortestPath_DIJ(new Vertex(networkId), vertexes);
-			for(Integer i:g.consumernodeCollection.keySet()){
-				int value = g.consumernodeCollection.get(i);
+			int[] path = g.shortestPath_DIJ1(vBand, vertexes);
+			for(Consumer ctmp:g.consumernodeCollection){
+				int value = (int) ctmp.networkid;
 				if(value != networkId){
 					System.out.print("node " + value + " --> ");
 					int vertex_index = networkId;
@@ -73,6 +77,26 @@ public class Main {
 		for(int i = 0;i < nodecross.length;i++){
 			System.out.println(nodecross[i]);
 		}
+		
+		Set<Integer> candidateNode = new HashSet<Integer>();
+		for(int i = 0;i < scores.length && scores[i] > 0.0;i++){
+			candidateNode.add(nodecross[i]);
+		}
+		
+		long min = Long.MAX_VALUE;
+		int coefi = 0,coefj = 0;
+		for(int i = 0;i <= 45;i++){
+			long itmp = i * 3 + 65;
+			for(int j = 45 - i;j <= 65 - i && j <= 30;j++){
+				itmp += j;
+				if(min > itmp){
+					min = itmp;
+					coefi = i;
+					coefj = j;
+				}
+			}
+		}
+		System.out.println(coefi + "," + coefj);
 		long end = System.currentTimeMillis();
 		System.out.println("\n" + (end - start));
 	}

@@ -58,7 +58,7 @@ public  class Graph {
     }
 
     public int[]  shortestPath_DIJ(Vertex v,long[] d){
-        long bandrequire = v.bandRequire;
+//        long bandrequire = v.bandRequire;
         Set<Vertex> min_set = new HashSet<Vertex>();
         Set<Vertex> unknown_set = new HashSet<Vertex>();
         int[] path = new int[d.length];
@@ -210,9 +210,10 @@ public  class Graph {
         return path;
     }
     
-    //从备选节点获取方案经费消耗
+    //从备选节点获取方案经费消耗,使用拓扑排序
     //v 消费节点对应的网络节点
     public void consumerToCandidateNode(final Vertex vertex,Set<Integer> candidatenode){
+    	ArrayList<Edge> visitedEdge = new ArrayList<Edge>();
     	Queue<Vertex> queue = new LinkedList<Vertex>();
     	queue.add(vertex);
     	while(!queue.isEmpty()){
@@ -233,6 +234,10 @@ public  class Graph {
         		long totalBand = e.totalBand;
         		long usage = e.usage.get(v + "->" + e.getAdjVertex(v));
         		long avail = totalBand - usage;
+        		if(e.visited){
+        			it.remove();
+        			continue;
+        		}
         		if(avail <= 0.0){
         			it.remove();
         			vList.remove(e.getAdjVertex(v));
@@ -273,6 +278,8 @@ public  class Graph {
                 		}
                 		System.out.println(v +" --> " + e.getAdjVertex(v));
                 		queue.add(e.getAdjVertex(v));
+                		e.visited = true;
+                		visitedEdge.add(e);
         			}else{
         				break;
         			}
@@ -318,15 +325,54 @@ public  class Graph {
         		}else{
         			Edge e = eList.get(0);
         			queue.add(e.getAdjVertex(v));
+        			e.visited = true;
         			System.out.println(v +" --> " + e.getAdjVertex(v));
     				long usage = e.usage.get(v + "->" + e.getAdjVertex(v));
     				e.usage.put(v + "->" + e.getAdjVertex(v),(int)(usage + bandrequire));
     				e.getAdjVertex(v).bandRequire = bandrequire;
         		}
         	}
+        	
     	}
-    	
+    	for(Edge e:visitedEdge){
+    		e.visited = false;
+    	}
     }
 
+//    public void consumerToCandiateNodeByShortest(Vertex vertex,Set<Integer> candidatenode){
+//    	Set<Vertex> minset = new HashSet<Vertex>();
+//    	long[] distance = new long[(int) this.networkedgenum];
+//    	int[] path = new int[(int) this.networkedgenum];
+//    	for(int i = 0;i < path.length;i++){
+//    		distance[i] = Long.MAX_VALUE;
+//    		path[i] = -1;
+//    	}
+//    	distance[(int)vertex.id]  = 0;
+//    	path[(int)vertex.id] = (int)vertex.id;
+//    }
 	
+    
+//    private Vertex unknown(Vertex vertex ,Set<Vertex> minset){
+//    	ArrayList<Edge> eList = this.getAllEdgeOfNode(vertex);
+//    	long maxBand = getMaxBand(vertex ,eList);
+//    	if(maxBand < vertex.bandRequire){
+//    		
+//    	}else{
+//    		
+//    	}
+//    	return null;
+//    }
+    
+//    private long getMaxBand(Vertex vertex ,ArrayList<Edge> eList){
+//    	long max = Long.MIN_VALUE;
+//    	for(Edge e:eList){
+//    		Vertex adj = e.getAdjVertex(vertex);
+//    		long band = e.totalBand;
+//    		long usage = e.usage.get(vertex+"->"+adj);
+//    		if(max < band-usage){
+//    			max = band - usage;
+//    		}
+//    	}
+//    	return max;
+//    }
 }

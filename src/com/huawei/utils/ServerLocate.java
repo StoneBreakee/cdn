@@ -1,20 +1,16 @@
-import java.util.HashSet;
+package com.huawei.utils;
+import java.util.ArrayList;
 import java.util.Set;
+import java.util.TreeSet;
 
 import com.huawei.graph.Consumer;
 import com.huawei.graph.Graph;
 import com.huawei.graph.Vertex;
-import com.huawei.initialgraph.GraphUtils;
 
-public class Main {
-	public static void main(String[] args){
+public class ServerLocate {
+	public static void displayPath(String[] contents){
 		long start = System.currentTimeMillis();
-		Graph g = GraphUtils.getGraphByFile();
-		Vertex v = new Vertex(22);
-		Vertex u = g.FirstAdjRex(v);
-		System.out.println("--" + u);
-		Vertex x = g.NextAdjVex(v, u);
-		System.out.println("--" + x);
+		Graph g = GraphUtils.getGraphByFile(contents);
 		
 		double gradient_total = 2;
 		double[] scores = new double[(int) g.networknodenum];
@@ -46,10 +42,6 @@ public class Main {
 			System.out.println("------end------");
 		}
 		
-//		for(int i = 0;i < scores.length;i++){
-//			System.out.println(scores[i]);
-//		}
-		
 		int[] nodecross = new int[(int)g.networknodenum];
 		for(int i = 0;i < nodecross.length;i++){
 			nodecross[i] = i;
@@ -74,21 +66,31 @@ public class Main {
 			}
 		}
 
-//		for(int i = 0;i < nodecross.length;i++){
-//			System.out.println(nodecross[i]);
-//		}
+		for(int i = 0;i < scores.length;i++){
+			System.out.print(scores[i] + " ");
+		}
+		System.out.println();
+		for(int i = 0;i < nodecross.length;i++){
+			System.out.print(nodecross[i] + " ");
+		}
 		
-		Set<Integer> candidateNode = new HashSet<Integer>();
-//		for(int i = 0;i < scores.length && scores[i] > 0.0;i++){
-//			candidateNode.add(nodecross[i]);
-//			System.out.print(nodecross[i] + " ");
-//		}
-		candidateNode.add(2);
-		candidateNode.add(3);
-		candidateNode.add(39);
+		ArrayList<Integer> candidateIndex  = new ArrayList<Integer>();
+		Set<Integer> candidateNode = new TreeSet<Integer>();
+		for(int i = 0;i <scores.length  && scores[i] > 0.0;i++){
+			candidateIndex.add(nodecross[i]);
+			System.out.print(nodecross[i] + " ");
+		}
+		for(int i = 0;i < candidateIndex.size() - 6;i++){
+			candidateNode.add(candidateIndex.get(i));
+		}
+		System.out.println("\nServer Num:" + candidateNode.size());
 		
 		System.out.println();
-		g.consumerToCandidateNode(g.networknodeCollection.get(22),candidateNode);
+		for(Consumer c:g.consumernodeCollection){
+			System.out.println("--path begin--");
+			g.consumerToCandidateNode(g.networknodeCollection.get((int)c.networkid),candidateNode);
+			System.out.println("--path over--");
+		}
 		long end = System.currentTimeMillis();
 		System.out.println("\n" + (end - start));
 	}

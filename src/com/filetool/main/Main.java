@@ -16,16 +16,14 @@ public class Main
 {
     public static void main(String[] args)
     {
-//        if (args.length != 2)
-//        {
-//            System.err.println("please input args: graphFilePath, resultFilePath");
-//            return;
-//        }
+        if (args.length != 2)
+        {
+            System.err.println("please input args: graphFilePath, resultFilePath");
+            return;
+        }
 
-//        String graphFilePath = args[0];
-//        String resultFilePath = args[1];
-        String graphFilePath = "./graphfile/case0.txt";
-        String resultFilePath = "./graphfile/result.txt";
+        String graphFilePath = args[0];
+        String resultFilePath = args[1];
 
         LogUtil.printLog("Begin");
 

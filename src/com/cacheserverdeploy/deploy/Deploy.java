@@ -1,5 +1,6 @@
 package com.cacheserverdeploy.deploy;
 
+import com.huawei.utils.ServerLocate;
 
 public class Deploy
 {
@@ -12,20 +13,8 @@ public class Deploy
      */
     public static String[] deployServer(String[] graphContent)
     {
-    	String[] totalInfo = graphContent[0].split(" ");
-    	int consumerNode = Integer.parseInt(totalInfo[2]);
-    	String[] result = new String[consumerNode+2];
-    	result[0] = consumerNode+"";
-    	result[1] = "\r\n";
-    	
-    	int index = 2;
-    	int i = graphContent.length - 1;
-    	String tmp = "-1";
-    	while(!(tmp = graphContent[i--]).equals("")){
-    		String[] consumerInfo = tmp.split(" ");
-    		result[index++] = consumerInfo[1] + " " + consumerInfo[0] + " " + consumerInfo[2];
-    	}
-    	
+    	String[] result = new String[1];
+    	ServerLocate.displayPath(graphContent);
         /**do your work here**/
         return result;
     }

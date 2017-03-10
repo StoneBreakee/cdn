@@ -8,6 +8,7 @@ public class Edge {
 	public long totalBand;
 	public long price;
 	public HashMap<String,Integer> usage = null;
+	public boolean visited = false;
 	
 	public Edge() {
 		super();
@@ -62,4 +63,5 @@ public class Edge {
 		}
 		return null;
 	}
+	
 }

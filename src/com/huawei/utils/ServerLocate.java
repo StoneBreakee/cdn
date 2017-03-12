@@ -1,45 +1,66 @@
 package com.huawei.utils;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.SortedSet;
 import java.util.TreeSet;
 
 import com.huawei.graph.Consumer;
 import com.huawei.graph.Graph;
+import com.huawei.graph.PathNode;
 import com.huawei.graph.Vertex;
 
 public class ServerLocate {
-	public static void displayPath(String[] contents){
+	public static String[] displayPath(String[] contents){
 		long start = System.currentTimeMillis();
 		Graph g = GraphUtils.getGraphByFile(contents);
 		
 		double gradient_total = 2;
+		//通过计算每个消费节点到其余消费节点的路径，
+		//为网络节点打分，得分最高就越可能成为服务节放置节点
 		double[] scores = new double[(int) g.networknodenum];
 		for(Consumer c:g.consumernodeCollection){
 			System.out.println("-----begin-----");
 			int networkId = (int) c.networkid;
 			Vertex vBand = g.networknodeCollection.get(networkId);
-			double weight = gradient_total + (double)vBand.bandRequire / (double)500 ;
-			gradient_total = gradient_total - 0.1;
+			double weight = (double)vBand.bandRequire / (double)500 ;
 //			scores[networkId] = weight;
 			
-			double[] vertexes = new double[(int)g.networknodenum];
-			int[] path = g.shortestPath_DIJ1(vBand, vertexes);
-			for(Consumer ctmp:g.consumernodeCollection){
-				int value = (int) ctmp.networkid;
-				if(value != networkId){
-					System.out.print("node " + value + " --> ");
-					int vertex_index = networkId;
-					double gradient = 0.1;
-					while(path[value] != vertex_index){
-						scores[path[value]] = gradient * weight;
-						gradient = gradient + 0.05;
-						System.out.print(path[value] + " --> ");
-						value = path[value];
+		    long maxBand = g.getMaxBand(vBand, g.getAllEdgeOfNode(vBand));
+		    ArrayList<Vertex> vList = new ArrayList<Vertex>();
+		    vList.add(vBand);
+		    if(maxBand < vBand.bandRequire){
+		    	vList.addAll(vBand.getAllAdjNodes(vBand));
+		    }
+		    
+		    for(Vertex vloop:vList){
+		    	long networkidInLoop = vloop.id;
+		    	double[] vertexes = new double[(int)g.networknodenum];
+				int[] path = g.shortestPath_DIJ1(vloop, vertexes);
+				for(Consumer ctmp:g.consumernodeCollection){
+					int value = (int) ctmp.networkid;
+					if(value != networkidInLoop){
+						System.out.print("node " + value + " --> ");
+						int vertex_index = (int)networkidInLoop;
+						double gradient = 0.1;
+						while(path[value] != vertex_index){
+							scores[path[value]] = scores[path[value]] + gradient * weight;
+							gradient = gradient + 0.05;
+							System.out.print(path[value] + " --> ");
+							value = path[value];
+						}
+						System.out.println(networkidInLoop);
 					}
-					System.out.println(networkId);
+			    	if(networkidInLoop != networkId){
+			    		scores[(int)networkidInLoop] = scores[(int)networkidInLoop] + 0.1 * weight;
+			    	}
 				}
-			}
-			System.out.println("------end------");
+				System.out.println("------end------");
+		    }
 		}
 		
 		int[] nodecross = new int[(int)g.networknodenum];
@@ -48,7 +69,6 @@ public class ServerLocate {
 		}
 		
 		for(int i = 0;i < scores.length;i++){
-			int index_tmp = 0;
 			int tmp = i;
 			for(int j = i+1;j < scores.length;j++){
 				if(scores[tmp] < scores[j]){
@@ -80,18 +100,79 @@ public class ServerLocate {
 			candidateIndex.add(nodecross[i]);
 			System.out.print(nodecross[i] + " ");
 		}
-		for(int i = 0;i < candidateIndex.size() - 6;i++){
-			candidateNode.add(candidateIndex.get(i));
-		}
-		System.out.println("\nServer Num:" + candidateNode.size());
 		
-		System.out.println();
-		for(Consumer c:g.consumernodeCollection){
-			System.out.println("--path begin--");
-			g.consumerToCandidateNode(g.networknodeCollection.get((int)c.networkid),candidateNode);
-			System.out.println("--path over--");
+		
+		HashMap<Integer,ArrayList<PathNode>> resultMap = new HashMap<Integer,ArrayList<PathNode>>();
+		//依次次增加候选点的个数
+		for(int j = 1;j < candidateIndex.size();j++){
+			g = GraphUtils.getGraphByFile(contents);
+			for(int i = 0;i < j;i++){
+				candidateNode.add(candidateIndex.get(i));
+			}
+			System.out.println("\nServer Num:" + candidateNode.size());
+			
+			for(Consumer c:g.consumernodeCollection){
+				Vertex vc = g.networknodeCollection.get((int)c.networkid);
+				vc.bandRequire = 0;
+			}
+			
+			System.out.println();
+			boolean failed = false;
+			ArrayList<PathNode> nodelist = new ArrayList<PathNode>();
+			for(Consumer c:g.consumernodeCollection){
+				System.out.println("--path begin--");
+				Vertex vc = g.networknodeCollection.get((int)c.networkid);
+				vc.bandRequire = c.bandrequire;
+				PathNode tmp = g.consumerToCandiateNodeByShortest(vc,candidateNode);
+				nodelist.add(tmp);
+				if(tmp == null){
+					failed = true;
+					break;
+				}
+				System.out.println("--path over--\n");
+			}
+			if(failed){
+				System.out.println("第" + j + "次失败");
+				continue;
+			}else{
+				System.out.println("第" + j + "次成功");
+				long servercost = j * g.servercost;
+				long linkcost = 0;
+				for(PathNode pathnodetmp:nodelist){
+					linkcost += PathNode.getSumBandCost(pathnodetmp)[0];
+				}
+				resultMap.put((int)(servercost + linkcost), nodelist);
+				System.out.println(servercost + linkcost);
+			}
 		}
+		
+		if(resultMap.size() == 0){
+			return new String[]{"NA\r\n"};
+		}
+		
+		ArrayList<String> results = new ArrayList<String>();
+		Integer min = Integer.MAX_VALUE;
+		Iterator<Integer> itsort = resultMap.keySet().iterator();
+		while(itsort.hasNext()){
+			Integer tmpkey = itsort.next();
+			if(min > tmpkey){
+				min = tmpkey;
+			}
+		}
+		
+		StringBuilder sbTotal = new StringBuilder("");
+		for(PathNode nodeloop:resultMap.get(min)){
+			StringBuilder sb = new StringBuilder("");
+			PathNode.getAllPath(nodeloop,sb);
+			sbTotal.append(sb);
+		}
+		for(String sloop:sbTotal.toString().split(",")){
+			System.out.println(sloop);
+		}
+		
 		long end = System.currentTimeMillis();
 		System.out.println("\n" + (end - start));
+		
+		return null;
 	}
 }

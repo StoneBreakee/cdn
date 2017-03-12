@@ -13,10 +13,8 @@ public class Deploy
      */
     public static String[] deployServer(String[] graphContent)
     {
-    	String[] result = new String[1];
-    	ServerLocate.displayPath(graphContent);
         /**do your work here**/
-        return result;
+        return ServerLocate.displayPath(graphContent);
     }
 
 }

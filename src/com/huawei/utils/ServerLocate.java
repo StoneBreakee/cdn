@@ -1,12 +1,9 @@
 package com.huawei.utils;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
-import java.util.SortedMap;
-import java.util.SortedSet;
 import java.util.TreeSet;
 
 import com.huawei.graph.Consumer;
@@ -167,12 +164,36 @@ public class ServerLocate {
 			sbTotal.append(sb);
 		}
 		for(String sloop:sbTotal.toString().split(",")){
-			System.out.println(sloop);
+			String[] value = sloop.split(" ");
+			int band = Integer.parseInt(value[value.length - 1]);
+			String[] path = Arrays.copyOfRange(value, 0, value.length - 1);
+			String[] tmpArr = new String[path.length+1];
+			for(int i = 0;i < path.length;i++){
+				tmpArr[tmpArr.length - 2 - i] = path[i];
+			}
+			for(int i = 0;i < g.consumernodenum;i++){
+				Consumer c = g.consumernodeCollection.get(i);
+				if(tmpArr[tmpArr.length - 2].equals(c.networkid+"")){
+					tmpArr[tmpArr.length - 1] = c.id+"";
+				}
+			}
+			String pathTmp = "";
+			for(int i = 0;i < tmpArr.length;i++){
+				pathTmp += tmpArr[i] + " ";
+			}
+			pathTmp += band;
+			System.out.println(pathTmp);
+			results.add(pathTmp);
 		}
-		
+		results.add(0, "\r\n");
+		results.add(0, results.size()+"");
 		long end = System.currentTimeMillis();
 		System.out.println("\n" + (end - start));
 		
-		return null;
+		String[] resultsArr = new String[results.size()];
+		for(int i = 0;i < results.size();i++){
+			resultsArr[i] = results.get(i);
+		}
+		return resultsArr;
 	}
 }

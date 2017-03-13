@@ -185,8 +185,8 @@ public class ServerLocate {
 			System.out.println(pathTmp);
 			results.add(pathTmp);
 		}
-		results.add(0, "\r\n");
-		results.add(0, results.size()+"");
+		results.add(0, "");
+		results.add(0, (results.size() - 1)+"");
 		long end = System.currentTimeMillis();
 		System.out.println("\n" + (end - start));
 		

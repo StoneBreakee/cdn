@@ -93,13 +93,18 @@ public class ServerLocate {
 		
 		ArrayList<Integer> candidateIndex  = new ArrayList<Integer>();
 		Set<Integer> candidateNode = new TreeSet<Integer>();
-		for(int i = 0;i <scores.length  && scores[i] > 0.0;i++){
+//		for(int i = 0;i <scores.length  && scores[i] > 0.0;i++){
+//			candidateIndex.add(nodecross[i]);
+//			System.out.print(nodecross[i] + " ");
+//		}
+		for(int i = 0;i <scores.length;i++){
 			candidateIndex.add(nodecross[i]);
 			System.out.print(nodecross[i] + " ");
 		}
 		
 		
 		HashMap<Integer,ArrayList<PathNode>> resultMap = new HashMap<Integer,ArrayList<PathNode>>();
+		
 		//依次次增加候选点的个数
 		for(int j = 1;j < candidateIndex.size();j++){
 			g = GraphUtils.getGraphByFile(contents);
@@ -140,6 +145,7 @@ public class ServerLocate {
 				}
 				resultMap.put((int)(servercost + linkcost), nodelist);
 				System.out.println(servercost + linkcost);
+				break;
 			}
 		}
 		

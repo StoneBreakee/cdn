@@ -64,4 +64,17 @@ public class Edge {
 		return null;
 	}
 	
+	@Override
+	public int hashCode(){
+		return (iVertex +"" + jVertex).hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object obj){
+		if(obj != null && obj instanceof Edge){
+			Edge e = (Edge)obj;
+			return this.iVertex.equals(e.iVertex) && this.jVertex.equals(e.jVertex);
+		}
+		return false;
+	}
 }

@@ -56,8 +56,8 @@ public class MaxStream {
 			res_capacity[iVertex][jVertex] = res_capacity[jVertex][iVertex] = edgeCol;
 		}
 
-		source = 13;
-		sink = 3;
+		source = 22;
+		sink = 0;
 		min_capacity = new int[size];
 		parent = new int[size];
 		color = new int[size];

@@ -63,22 +63,22 @@ public class MaxStream {
 		color = new int[size];
 		queue = new int[size];
 	}
-
-	public void maxstream() {
-		while (BreadFirstSearch(source)) {
-			max_flow += min_capacity[sink];
-			int v = sink, u;
-			while (v != source) {
-				u = parent[v];
-				flow[u][v] += min_capacity[sink];
-				flow[v][u] -= min_capacity[sink];
-				res_capacity[u][v] -= min_capacity[sink];
-				res_capacity[v][u] += min_capacity[sink];
-				v = u;
-			}
-		}
-		displayMaxStream(source);
-	}
+//
+//	public void maxstream() {
+//		while (BreadFirstSearch(source)) {
+//			max_flow += min_capacity[sink];
+//			int v = sink, u;
+//			while (v != source) {
+//				u = parent[v];
+//				flow[u][v] += min_capacity[sink];
+//				flow[v][u] -= min_capacity[sink];
+//				res_capacity[u][v] -= min_capacity[sink];
+//				res_capacity[v][u] += min_capacity[sink];
+//				v = u;
+//			}
+//		}
+//		displayMaxStream(source);
+//	}
 
 	private boolean BreadFirstSearch(int source) {
 		for (int i = 0; i < size; i++) {
@@ -129,6 +129,6 @@ public class MaxStream {
 	public static void main(String[] args){
 		MaxStream ma = new MaxStream();
 		ma.readFile();
-		ma.maxstream();
+//		ma.maxstream();
 	}
 }

@@ -55,6 +55,5 @@ public class PathNode {
 			}
 			str = str.delete(str.length() - strtmp.length(), str.length());
 		}
-		
 	}
 }

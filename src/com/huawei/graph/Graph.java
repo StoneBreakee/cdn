@@ -6,7 +6,8 @@ public class Graph {
 	public ArrayList<Vertex> networknodeCollection = new ArrayList<Vertex>();
 	public ArrayList<Consumer> consumernodeCollection = new ArrayList<Consumer>();
 	public long networknodenum, consumernodenum, networkedgenum, servercost;
-
+	public int totalbandrequire;
+	
 	// 获取v节点的第一个邻接点
 	public Vertex FirstAdjRex(Vertex v) {
 		if (v != null) {

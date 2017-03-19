@@ -1,5 +1,6 @@
 package com.cacheserverdeploy.deploy;
 
+import com.huawei.multimaxstream.MaxStreamServerLocate;
 import com.huawei.utils.ServerLocate;
 
 public class Deploy
@@ -14,7 +15,7 @@ public class Deploy
     public static String[] deployServer(String[] graphContent)
     {
         /**do your work here**/
-        return ServerLocate.displayPath(graphContent);
+        return MaxStreamServerLocate.displayPath(graphContent);
     }
 
 }

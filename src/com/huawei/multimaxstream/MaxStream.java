@@ -1,4 +1,4 @@
-package com.huawei.utils;
+package com.huawei.multimaxstream;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -124,11 +124,5 @@ public class MaxStream {
 				}
 			}
 		}
-	}
-	
-	public static void main(String[] args){
-		MaxStream ma = new MaxStream();
-		ma.readFile();
-//		ma.maxstream();
 	}
 }

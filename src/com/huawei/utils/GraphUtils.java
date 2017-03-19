@@ -48,7 +48,7 @@ public class GraphUtils {
     		for(int i = 0;i < ltmp.length;i++){
     			ltmp[i] = Long.parseLong(stmp[i]);
     		}
-    		
+    		g.totalbandrequire += (int)ltmp[2];
     		long networkId = (int)ltmp[1];
     		Vertex networknode = g.networknodeCollection.get((int)networkId);
     		networknode.bandRequire = ltmp[2];
@@ -66,35 +66,6 @@ public class GraphUtils {
     	return g;
 	}
     
-//	private static void displayEdges(Graph g) {
-//		Set<Vertex> set = new HashSet<Vertex>();
-//    	for(Vertex v:g.networknodeCollection){
-//    		set.add(v);
-//    		int[] vertex_visited = new int[(int)g.networknodenum];
-//    		vertex_visited[(int)v.id] = 1;
-//    		Edge e = v.firstEdge;
-//    		while(e != null){
-//    			Vertex j = null;
-//    			Edge etmp = null;
-//    			if(e.iVertex.equals(v)){
-//    				etmp = e.iEdge;
-//    				j = e.jVertex;
-//    			}else if(e.jVertex.equals(v)){
-//    				etmp = e.jEdge;
-//    				j = e.iVertex;
-//    			}else{
-//    				break;
-//    			}
-//    			if(vertex_visited[(int)j.id] == 0){
-//    				if(!set.contains(j)){
-//    					System.out.println(e);
-//    				}
-//    				vertex_visited[(int)j.id] = 1;
-//    			}
-//    			e = etmp;
-//    		}
-//    	}
-//	}
 	private static void addEdgeOnVertex(Graph g, Set<Vertex> set, Vertex v, Edge e) {
 		if(!set.contains(v)){
 			set.add(v);

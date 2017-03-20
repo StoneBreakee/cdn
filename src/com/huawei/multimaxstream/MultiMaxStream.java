@@ -162,11 +162,14 @@ public class MultiMaxStream {
 					int dataflow = vNode.dataflow;
 					int v = vNode.self + 1;
 					for (int j = 1; j < flow[v].length - 1; j++) {
-						if (flow[v][j] > 0) {
-							dataflow = Math.min(dataflow, flow[v][j]);
-							MultiPathNode tmpNode = new MultiPathNode(v-1,j-1,dataflow,getLinePrice(v-1,j-1));
+						if (flow[v][j] > 0 && dataflow > 0) {
+							int dataflowmin =  Math.min(dataflow, flow[v][j]);
+							dataflowmin = Math.min(dataflowmin, capacity[v][j]);
+							flow[v][j] -= dataflowmin;
+							dataflow -= dataflowmin;
+							MultiPathNode tmpNode = new MultiPathNode(v-1,j-1,dataflowmin,getLinePrice(v-1,j-1));
 							son.add(tmpNode);
-							System.out.println((v - 1) + " -> " + (j - 1) + " , flow : " + dataflow);
+							System.out.println((v - 1) + " -> " + (j - 1) + " , flow : " + dataflowmin);
 							qtmp.add(tmpNode);
 						}
 					}

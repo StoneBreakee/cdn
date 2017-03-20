@@ -5,8 +5,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map.Entry;
-import java.util.SortedMap;
-
 
 public class MaxStreamServerLocate {
 	
@@ -15,6 +13,7 @@ public class MaxStreamServerLocate {
 	public static ArrayList<Integer[]> costlist = new ArrayList<Integer[]>();
 	
 	public static String[] displayPath(String[] contents){
+		long start = System.currentTimeMillis();
 		MultiMaxStream mms1 = new MultiMaxStream();
 		mms1.sinks = new int[]{};
 		mms1.readFile(contents);
@@ -24,9 +23,6 @@ public class MaxStreamServerLocate {
 		}
 		
 	    //遍历当前servernode集合的cost最小值，如果存在，则继续遍历servernode少一的每种情况
-//	    while(getAvailPathSet(serverlist,contents)){
-//	    	
-//	    }
 	    while(getAvailPathSet(serverlist,contents)){
 	    	int cutnode = costlist.get(0)[0];
 	    	costlist.clear();
@@ -35,6 +31,10 @@ public class MaxStreamServerLocate {
 	    			serverlist.remove(i);
 	    			break;
 	    		}
+	    	}
+	    	long end = System.currentTimeMillis();
+	    	if(end - start > 70 * 1000){
+	    		break;
 	    	}
 	    }
 		
@@ -48,7 +48,32 @@ public class MaxStreamServerLocate {
 	    }
 	    
 	    System.out.println(min);
-		return null;
+	    //This is the final path
+	    StringBuilder totalPath = new StringBuilder("");
+	    for(MultiPathNode node:minlist){
+	    	StringBuilder nodepath = new StringBuilder("");
+	    	MultiPathNode.getAllPath(node, nodepath);
+	    	totalPath.append(nodepath);
+	    }
+	    
+	    String[] pathArray = totalPath.substring(0, totalPath.length() - 1).toString().split(",");
+	    String[] pathOutput = new String[contents.length];
+	    pathOutput[0] = ""+pathArray.length;
+	    pathOutput[1] = "";
+//	    pathOutput[pathOutput.length - 1] = "";
+	    
+	    int start_index = 2;
+	    for(String path:pathArray){
+	    	String[] tmp = path.split(" ");
+	    	String dataflow = tmp[tmp.length - 1];
+	    	String str = "";
+	    	for(int m= tmp.length - 2;m >= 0;m--){
+	    		str += tmp[m] + " ";
+	    	}
+	    	str += dataflow;
+	    	pathOutput[start_index++] = str;
+	    }
+		return pathOutput;
 	}
 	
 	public static boolean getAvailPathSet(ArrayList<Integer> serverlist,String[] contents){

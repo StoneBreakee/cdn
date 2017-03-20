@@ -2,8 +2,6 @@ package com.huawei.multimaxstream;
 
 import java.util.ArrayList;
 
-import com.huawei.graph.PathNode;
-
 public class MultiPathNode {
 	public int parent_node;
 	public int self;
@@ -28,21 +26,18 @@ public class MultiPathNode {
 	}
 	
 	// 输出所有根节点到叶子节点的路径
-	public static int getAllPath(MultiPathNode node, StringBuilder str) {
-		int cost = 0;
-		str.append(node.self + " ");
+	public static void getAllPath(MultiPathNode node, StringBuilder str) {
+		str.append(node.parent_node + " ");
 		if (node.son.size() == 0) {
-			str.append(node.dataflow + ",");
+			str.append(node.self + " " + node.dataflow + ",");
 		}else{
 			String strtmp = str.toString();
 			for (MultiPathNode tmp : node.son) {
-				cost += tmp.dataflow * tmp.price;
 				getAllPath(tmp, str);
 				str.append(strtmp);
 			}
 			str = str.delete(str.length() - strtmp.length(), str.length());
 		}
-		return cost;
 	}
 	
 	// 输出所有根节点到叶子节点的路径
@@ -50,8 +45,8 @@ public class MultiPathNode {
 		int cost = 0;
 		if (node.son.size() != 0){
 			for (MultiPathNode tmp : node.son) {
+				cost += getAllPath(tmp);
 				cost += tmp.dataflow * tmp.price;
-				getAllPath(tmp);
 			}
 		}
 		return cost;

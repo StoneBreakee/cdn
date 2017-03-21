@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import com.filetool.util.FileUtil;
+
 import static java.lang.System.out;
 
 /**
@@ -23,7 +25,8 @@ public class MultiMaxStream {
 	private Queue<Integer> queue;
 
 	private int source, sink;
-
+    private int vertex_size;
+	
 	public int[][] capacity;
 	public int[][] res_capacity;
 	public int[][] flow;
@@ -37,7 +40,7 @@ public class MultiMaxStream {
 	public void readFile(String[] contents) {
 		servercost = Integer.parseInt(contents[2]);
 		String[] graphInfos = contents[0].split(" ");
-		int vertex_size = Integer.parseInt(graphInfos[0]);
+		vertex_size = Integer.parseInt(graphInfos[0]);
 		int edges_size = Integer.parseInt(graphInfos[1]);
 		int consumer_size = Integer.parseInt(graphInfos[2]);
 
@@ -129,6 +132,59 @@ public class MultiMaxStream {
 		return false;
 	}
 
+	public void dijistra(int source){
+		boolean[] path = new boolean[vertex_size + 2];
+		int[] visite = new int[vertex_size + 2];
+		int[] distance = new int[vertex_size + 2];
+		for(int i = 0;i < vertex_size + 2;i++){
+			visite[i] = Integer.MAX_VALUE;
+			distance[i] = Integer.MAX_VALUE;
+			color[i] = WHITE;
+			path[i] = false;
+			if(capacity[source][i]> 0){
+				distance[i] = capacity[source][i];
+			}
+		}
+		path[source] = true;
+		distance[source] = 0;
+		visite[source] = -1;
+		int v = -1,w = source;
+		
+		for(int i = 0;i < vertex_size + 2;i++){
+			int min = Integer.MAX_VALUE;
+			for(int j = 0;j < vertex_size + 2;j++){
+				if(!path[j]){
+					if(distance[j] < min){
+						v = j;
+						min = distance[j];
+					}
+				}
+			}
+			path[v] = true;
+			for(int k = 0;k < vertex_size + 2;k++){
+				if(!path[k] && capacity[v][k] > 0 && min + capacity[v][k]< distance[k]){
+					distance[k] = min + capacity[v][k];
+					visite[k] = v;
+				}
+			}
+		}
+		int i = vertex_size - 1;
+		System.out.print(i + " -> ");
+		while(i != -1){
+			System.out.print(visite[i] - 1 + " -> ");
+			i = visite[i];
+		}
+		
+		System.out.println();
+	}
+	
+	public static void main(String[] args){
+		MultiMaxStream mms = new MultiMaxStream();
+		mms.sinks = new int[]{0,3,22};
+		mms.readFile(FileUtil.read("./graphfile/case5.txt", null));
+		mms.dijistra(0);
+	}
+	
 	public void display() {
 		for (int i = 0; i < flow[0].length; i++) {
 			if (flow[0][i] > 0) {
@@ -186,4 +242,5 @@ public class MultiMaxStream {
 		}
 		return price;
 	}
+
 }

@@ -33,7 +33,7 @@ public class MaxStreamServerLocate {
 	    		}
 	    	}
 	    	long end = System.currentTimeMillis();
-	    	if(end - start > 70 * 1000){
+	    	if(end - start > 80 * 1000){
 	    		break;
 	    	}
 	    }

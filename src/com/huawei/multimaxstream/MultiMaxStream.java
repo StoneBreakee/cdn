@@ -65,13 +65,27 @@ public class MultiMaxStream {
 			int consumerNode = Integer.parseInt(consumerInfo[0]);
 			int networkNode = Integer.parseInt(consumerInfo[1]);
 			int bandrequire = Integer.parseInt(consumerInfo[2]);
-			capacity[0][networkNode + 1] = res_capacity[0][networkNode + 1] = bandrequire;
-
-			totalbandrequire += bandrequire;
+			boolean flag = false;
+			for(int j = 0;j < sinks.length && !flag;j++){
+				if(networkNode == sinks[j]){
+					flag = true;
+				}
+			}
+			if(!flag){
+				capacity[0][networkNode + 1] = res_capacity[0][networkNode + 1] = bandrequire;
+				totalbandrequire += bandrequire;
+			}
+			
 			netnodeToConsumer.put(networkNode, consumerNode);
 		}
 
 		for (int i = 0; i < sinks.length; i++) {
+			int tmp_sink_total = 0;
+			for(int j = 1;j < vertex_size + 1;j++){
+				if(capacity[sinks[i] + 1][j] > 0){
+					tmp_sink_total += capacity[sinks[i] + 1][j];
+				}
+			}
 			capacity[sinks[i] + 1][vertex_size + 1] = res_capacity[sinks[i] + 1][vertex_size + 1] = Integer.MAX_VALUE;
 		}
 
@@ -132,6 +146,20 @@ public class MultiMaxStream {
 		return false;
 	}
 
+	public static void main(String[] args){
+		MultiMaxStream mms = new MultiMaxStream();
+		mms.sinks = new int[]{0,3,22};
+		mms.readFile(FileUtil.read("./graphfile/case5.txt", null));
+		mms.maxStream();
+		for(int i = 1;i < mms.flow.length -1;i++){
+			for(int j = 1;j < mms.flow[i].length - 1;j++){
+				if(mms.flow[i][j] > 0 && mms.capacity[i][j] < mms.flow[i][j]){
+					System.out.println((i - 1) + " , " + (j - 1));
+				}
+			}
+		}
+	}
+	
 	public void dijistra(int source){
 		boolean[] path = new boolean[vertex_size + 2];
 		int[] visite = new int[vertex_size + 2];
@@ -176,13 +204,6 @@ public class MultiMaxStream {
 		}
 		
 		System.out.println();
-	}
-	
-	public static void main(String[] args){
-		MultiMaxStream mms = new MultiMaxStream();
-		mms.sinks = new int[]{0,3,22};
-		mms.readFile(FileUtil.read("./graphfile/case5.txt", null));
-		mms.dijistra(0);
 	}
 	
 	public void display() {
